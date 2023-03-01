@@ -1,0 +1,32 @@
+{% load get_menu %}
+
+<nav class="navbar {{ menu_class }}">
+    {% for id, item in menu.items %}
+    <div class="dropdown">
+        {% if not item.parent %}
+            {% define "btn btn-secondary" as css_class %}
+            {% if item.item.named_url  %}
+                {% url item.item.named_url as the_url %}
+                    {% if item.item.named_url == request.resolver_match.view_name %}
+                        {% concat css_class " active" as css_class %}
+                    {% endif %}
+            {% else %}
+                {% define item.item.url as the_url %}
+                {% if item.item.url == request.resolver_match.view_name %}
+                        {% concat css_class " active" as css_class %}
+                    {% endif %}
+            {% endif %}
+            {% if item.child|length > 0 %}
+                {% concat css_class " dropdown-toggle" as css_class %}
+                {% define 'role="button"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"' as data %}
+            {% endif %}
+
+            <a href="{{ the_url }}" class="{{ css_class }}" {{ data }}>{{ item.item.name }}</a>
+                {% if item.child|length > 0 %}
+                    {% show_submenu item.child menu %}
+                {% endif %}
+
+        {% endif %}
+    </div>
+    {% endfor %}
+</nav>
